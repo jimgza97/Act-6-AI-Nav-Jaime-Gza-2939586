@@ -1,0 +1,98 @@
+SIN NARRAR:
+using UnityEngine;
+using UnityEngine.AI;
+
+[RequireComponent  (typeof(NavMeshAgent))]
+public class NewMonoBehaviourScript : MonoBehaviour
+{
+    [SerializeField] LayerMask groundMask;
+
+    InputSystem_Actions input;
+
+    NavMeshAgent agent;
+
+    private void OnEnable()
+    {
+        input.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        input.Player.Disable();
+    }
+    private void Awake()
+    {
+        input = new();
+    }
+    private void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        input.Player.Click.performed += ct =>
+        {
+            Ray ray = Camera.main.ScreenPointToRay(input.Player.Point.ReadValue<Vector2>());
+           if(Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundMask))
+           {
+                agent.destination = hit.point;
+           }
+        };
+    }
+}
+
+
+NARRADO:
+
+using UnityEngine;
+using UnityEngine.AI;
+
+// Asegura que el GameObject tenga un componente NavMeshAgent obligatorio
+[RequireComponent(typeof(NavMeshAgent))]
+public class NewMonoBehaviourScript : MonoBehaviour
+{
+    // Define una máscara de capa para identificar el suelo donde el agente puede moverse
+    [SerializeField] LayerMask groundMask;
+
+    // Instancia del sistema de entrada personalizada
+    InputSystem_Actions input;
+
+    // Referencia al componente NavMeshAgent del GameObject
+    NavMeshAgent agent;
+
+    // Método que se ejecuta cuando el objeto se habilita en la escena
+    private void OnEnable()
+    {
+        input.Player.Enable(); // Habilita el esquema de controles del jugador
+    }
+
+    // Método que se ejecuta cuando el objeto se deshabilita en la escena
+    private void OnDisable()
+    {
+        input.Player.Disable(); // Deshabilita el esquema de controles del jugador
+    }
+
+    // Se ejecuta al iniciar el script antes de Start, útil para inicializaciones
+    private void Awake()
+    {
+        input = new(); // Crea una nueva instancia del sistema de entrada
+    }
+
+    // Se ejecuta al inicio del juego, después de Awake
+    private void Start()
+    {
+        // Obtiene el componente NavMeshAgent del GameObject
+        agent = GetComponent<NavMeshAgent>();
+
+        // Asigna una acción al evento de clic del jugador
+        input.Player.Click.performed += ct =>
+        {
+            // Lanza un rayo desde la cámara hacia la posición del cursor
+            Ray ray = Camera.main.ScreenPointToRay(input.Player.Point.ReadValue<Vector2>());
+
+            // Si el rayo golpea un objeto en la capa definida como suelo
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundMask))
+            {
+                // Establece la posición del impacto como el destino del agente
+                agent.destination = hit.point;
+            }
+        };
+    }
+}
